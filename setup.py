@@ -11,6 +11,10 @@ setup(
         'django-hvad @ https://github.com/lotrekagency/django-hvad/archive/master.zip',
         'djangorestframework>=3.9.2',
     ],
+    dependency_links=[
+        # Make sure to include the `#egg` portion so the `install_requires` recognizes the package
+        'git+ssh://git@github.com/lotrekagency/django-hvad.git@master#egg=django-hvad-lotrek-1.8.0'
+    ],
     long_description=long_description,
     description="Insuperable content editing",
     license="MIT",

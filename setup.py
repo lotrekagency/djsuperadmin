@@ -8,9 +8,8 @@ setup(
     version='0.0.1',
     url='https://github.com/bnznamco/djsuperadmin',
     install_requires=[
-        'django-hvad @ https://github.com/kristianoellegaard/django-hvad/tarball/releases/2.0.x',
+        'django-hvad @ https://github.com/lotrekagency/django-hvad/archive/master.zip',
         'djangorestframework>=3.9.2',
-        'django>=1.11.6'
     ],
     long_description=long_description,
     description="Insuperable content editing",

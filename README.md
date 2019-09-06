@@ -14,7 +14,7 @@ INSTALLED_APPS = [
 
 context_processors = [
     ...
-    'djsuperadmin.context_processors.djsuperadmin' 
+    'djsuperadmin.context_processors.djsuperadmin'
     ...
 ]
 ```
@@ -31,7 +31,7 @@ urlpatterns = [
 ```html
 {% load djsuperadmin %}
 ```
-If you want use Quill Editor
+If you want use CKEditor
 ```html
 <body>
     <div>

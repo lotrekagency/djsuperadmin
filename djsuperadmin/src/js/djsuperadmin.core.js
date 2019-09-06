@@ -1,4 +1,4 @@
-import { Quill, quillFullConfig } from './djsuperadmin.quill'
+import { initCKEditor } from './djsuperadmin.ckeditor'
 
 
 var getCookie = (name) => {
@@ -33,10 +33,10 @@ var classname = document.getElementsByClassName("djsuperadmin");
 var content;
 var editor_mode = 1
 /**
- * editor mode 
+ * editor mode
  * 0 : bare editor, only a textare USE IT WITH CAUTION
- * 1 : full quill editor
- * 2 : lite quill editor (you can't use other than <strong> <b> <i> <u>) 
+ * 1 : full ckeditor editor
+ * 2 : lite ckeditor editor (you can't use other than <strong> <b> <i> <u>)
  */
 var isTokenNeeded = (method) => {
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
@@ -122,10 +122,13 @@ var buildModal = (editor_mode = editor_mode) => {
         default:
             editor = document.createElement('div');
             editor.id = 'editor';
-            editor.innerHTML = content.content;
             container.appendChild(editor);
-            editor = new Quill('#editor', quillFullConfig);
-            editor_content = () => { return editor.container.firstChild.innerHTML }
+            initCKEditor();
+            editor = CKEDITOR.document.getById( 'editor' );
+            editor.setHtml(content.content)
+            editor_content = () => {
+                return CKEDITOR.instances.editor.getData();
+            }
     }
     container.appendChild(btn);
     btn.addEventListener('click', function () { pushContent(editor_content()) }, false);

@@ -38,3 +38,8 @@ def content_lite(context, identifier):
 @register.simple_tag(takes_context=True)
 def content_raw(context, identifier):
     return _get_content(context, identifier, 0, placeholder="New RAW content")
+
+
+@register.simple_tag(takes_context=True)
+def safe_content_raw(context, identifier):
+    return mark_safe(_get_content(context, identifier, 0, placeholder="New RAW content"))

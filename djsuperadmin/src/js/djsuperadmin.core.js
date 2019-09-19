@@ -96,9 +96,13 @@ var pushContent = (htmlcontent) => {
 var buildModal = (editor_mode = editor_mode) => {
     var background = document.createElement('div');
     var container = document.createElement('div');
-    var btn = document.createElement("button");
-    btn.innerHTML = 'SALVA';
-    btn.classList.add('djsuperadmin-save');
+    var btnSave = document.createElement("button");
+    var btnCancel = document.createElement("button");
+
+    btnSave.innerHTML = '💾';
+    btnSave.classList.add('djsuperadmin-btn');
+    btnCancel.innerHTML = '❌';
+    btnCancel.classList.add('djsuperadmin-btn');
 
     background.classList.add("djsuperadmin-background");
     container.classList.add("djsuperadmin-editor");
@@ -130,13 +134,17 @@ var buildModal = (editor_mode = editor_mode) => {
                 return CKEDITOR.instances.editor.getData();
             }
     }
-    container.appendChild(btn);
-    btn.addEventListener('click', function () { pushContent(editor_content()) }, false);
-    window.onclick = function (event) {
-        if (event.target == background) {
-            background.remove()
-        }
-    }
+    var btnsContainer = document.createElement('div');
+    btnsContainer.classList.add('djsuperadmin-btnscontainer');
+    btnsContainer.appendChild(btnSave);
+    btnsContainer.appendChild(btnCancel);
+    container.appendChild(btnsContainer);
+    btnSave.addEventListener('click', function () {
+        pushContent(editor_content())
+    }, false);
+    btnCancel.addEventListener('click',function () {
+        background.remove()
+    }, false);
 };
 
 for (var i = 0; i < classname.length; i++) {

@@ -32,19 +32,28 @@
   width: 35rem;
   height: 20rem;
 }
-.djsuperadmin-save {
-  background: #78a6e4;
+
+
+.djsuperadmin-btnscontainer {
+    display: flex;
+    justify-content: center;
+}
+
+.djsuperadmin-btn {
+  background: #CCD857;
   color: white;
   font-family: monospace;
   padding: 0.5rem;
   border: 1px solid;
-  border-radius: 1rem;
-  left: 50%;
-  position: absolute;
+  border-radius: 50%;
   transform: translateX(-50%);
   margin-top: 1rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
   cursor: pointer;
 }
+
+
 .raw-editor {
   background: white;
   width: 100%;

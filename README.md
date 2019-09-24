@@ -29,7 +29,7 @@ urlpatterns = [
 
 **In your template.html**
 ```html
-{% load djsuperadmin %}
+{% load djsuperadmintag %}
 ```
 If you want use CKEditor
 ```html

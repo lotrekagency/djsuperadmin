@@ -22,16 +22,10 @@ var json = (response) => {
 const csrftoken = getCookie('csrftoken');
 
 
-var logout_link_button = document.createElement('a');
-logout_link_button.innerHTML = 'LOGOUT';
-logout_link_button.href = djsa_logout_url;
-logout_link_button.classList.add("djsuperadmin-logout");
-document.body.appendChild(logout_link_button);
-
-
 var classname = document.getElementsByClassName("djsuperadmin");
 var content;
 var editor_mode = 1
+var patch_content_url = null;
 /**
  * editor mode
  * 0 : bare editor, only a textare USE IT WITH CAUTION
@@ -70,9 +64,15 @@ var handleClick = function (event) {
 
 var getContent = function (element) {
     var attribute = element.getAttribute("data-djsa");
+    var get_content_url = element.getAttribute("data-getcontenturl");
+    patch_content_url = element.getAttribute("data-patchcontenturl");
     editor_mode = element.getAttribute("data-mode");
     var options = getOptions('GET');
-    var url = "/djsuperadmin/contents/" + attribute + "/";
+    if (!get_content_url) {
+        var url = "/djsuperadmin/contents/" + attribute + "/";
+    } else {
+        var url = get_content_url;
+    }
     fetch(url, options).then(status).then(json).then(function (data) {
         content = data;
         buildModal(editor_mode);
@@ -83,7 +83,11 @@ var getContent = function (element) {
 
 var pushContent = (htmlcontent) => {
     content.content = htmlcontent;
-    var url = '/djsuperadmin/contents/' + content.id + '/';
+    if (!patch_content_url) {
+        var url = '/djsuperadmin/contents/' + content.id + '/';
+    } else {
+        var url = patch_content_url;
+    }
     var options = getOptions('PATCH');
     options['body'] = JSON.stringify(content);
     fetch(url, options).then(status).then(json).then(function (data) {

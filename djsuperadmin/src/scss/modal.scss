@@ -1,8 +1,4 @@
-.djsuperadmin-content {
-  border: 2px #ff5050 dotted;
-  border-radius: 6px;
-  padding: 0.2rem .5rem;
-}
+
 .djsuperadmin-background {
   position: fixed;
   top: 0;
@@ -70,6 +66,9 @@
 }
 
 span.djsuperadmin{
+  border: 2px #ff5050 dotted;
+  border-radius: 6px;
+  //padding: 0.2rem .5rem;
   z-index: 1000000;
   display: block;
   width: 100%;

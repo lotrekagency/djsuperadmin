@@ -124,11 +124,15 @@ def safe_content_raw(context, identifier):
 
 @register.simple_tag(takes_context=True)
 def breadcrumb_content(context):
+    if not context['request'].resolver_match:
+        return ''
     identifier = context['request'].resolver_match.url_name
     return _get_breadcrumb_content(context, identifier, placeholder="New breadcrumb")
 
 
 @register.simple_tag(takes_context=True)
 def breadcrumb_ld(context):
+    if not context['request'].resolver_match:
+        return ''
     identifier = context['request'].resolver_match.url_name
     return _get_breadcrumb_ld(context, identifier, placeholder="New breadcrumb")

@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='djsuperadmin',
-    version='0.0.1',
+    version='0.0.2',
     url='https://github.com/lotrekagency/djsuperadmin',
     install_requires=[
         'django-hvad @ https://github.com/lotrekagency/django-hvad/archive/master.zip',

@@ -47,6 +47,14 @@ If you want a raw content (no html needed)
     </p>
 </body>
 ```
+If you want an object content
+```html
+<body>
+    <p>
+        {% content_obj your_object 'your_object_attribute' %}
+    </p>
+</body>
+```
 ```html
 <footer>
     {{djsuperadminjs}}

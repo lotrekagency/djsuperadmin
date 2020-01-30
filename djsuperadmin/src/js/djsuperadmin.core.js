@@ -62,6 +62,10 @@ var handleClick = function (event) {
 
 }
 
+var generateCacheAttr = function() {
+  return '?cache=' + ("" + (Math.random() * 100) + "" + Date.now()).replace('.', '');
+}
+
 var getContent = function (element) {
     var attribute = element.getAttribute("data-djsa");
     var get_content_url = element.getAttribute("data-getcontenturl");
@@ -73,7 +77,7 @@ var getContent = function (element) {
     } else {
         var url = get_content_url;
     }
-    fetch(url, options).then(status).then(json).then(function (data) {
+    fetch(url + generateCacheAttr(), options).then(status).then(json).then(function (data) {
         content = data;
         buildModal(editor_mode);
     }).catch(function (error) {
@@ -90,7 +94,7 @@ var pushContent = (htmlcontent) => {
     }
     var options = getOptions('PATCH');
     options['body'] = JSON.stringify(content);
-    fetch(url, options).then(status).then(json).then(function (data) {
+    fetch(url + generateCacheAttr(), options).then(status).then(json).then(function (data) {
         location.reload()
     }).catch(function (error) {
         console.log('Request failed', error);

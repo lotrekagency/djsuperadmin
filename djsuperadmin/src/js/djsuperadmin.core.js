@@ -26,6 +26,13 @@ var classname = document.getElementsByClassName("djsuperadmin");
 var content;
 var editor_mode = 1
 var patch_content_url = null;
+
+var background;
+var container;
+var btnSave;
+var btnCancel;
+var clickedElement;
+var errorBanner;
 /**
  * editor mode
  * 0 : bare editor, only a textare USE IT WITH CAUTION
@@ -50,11 +57,11 @@ var getOptions = (req_method) => {
 var handleClick = function (event) {
     event.stopPropagation();
     event.preventDefault();
-    var element = this
+    clickedElement = this
     clearTimeout(this.clickTimeout);
     this.clickTimeout = setTimeout(function () {
         if (event.detail == 2) {
-            getContent(element)
+            getContent(clickedElement)
         } else {
             event.target.parentNode.click()
         }
@@ -81,7 +88,7 @@ var getContent = function (element) {
         content = data;
         buildModal(editor_mode);
     }).catch(function (error) {
-        console.log('Request failed', error);
+        console.log(error);
     });
 };
 
@@ -95,17 +102,21 @@ var pushContent = (htmlcontent) => {
     var options = getOptions('PATCH');
     options['body'] = JSON.stringify(content);
     fetch(url + generateCacheAttr(), options).then(status).then(json).then(function (data) {
-        location.reload()
+        clickedElement.innerHTML = htmlcontent;
+        background.remove();
     }).catch(function (error) {
-        console.log('Request failed', error);
+        errorBanner.innerHTML = error;
+        setTimeout(function () {
+            errorBanner.innerHTML = '';
+        }, 2000);
     });
 };
 
 var buildModal = (editor_mode = editor_mode) => {
-    var background = document.createElement('div');
-    var container = document.createElement('div');
-    var btnSave = document.createElement("button");
-    var btnCancel = document.createElement("button");
+    background = document.createElement('div');
+    container = document.createElement('div');
+    btnSave = document.createElement("button");
+    btnCancel = document.createElement("button");
 
     btnSave.innerHTML = '💾';
     btnSave.classList.add('djsuperadmin-btn');
@@ -142,16 +153,19 @@ var buildModal = (editor_mode = editor_mode) => {
                 return CKEDITOR.instances.editor.getData();
             }
     }
+    errorBanner = document.createElement('div');
+    errorBanner.classList.add('djsuperadmin-errorbanner');
     var btnsContainer = document.createElement('div');
     btnsContainer.classList.add('djsuperadmin-btnscontainer');
     btnsContainer.appendChild(btnSave);
     btnsContainer.appendChild(btnCancel);
+    container.appendChild(errorBanner);
     container.appendChild(btnsContainer);
     btnSave.addEventListener('click', function () {
-        pushContent(editor_content())
+        pushContent(editor_content());
     }, false);
     btnCancel.addEventListener('click',function () {
-        background.remove()
+        background.remove();
     }, false);
 };
 

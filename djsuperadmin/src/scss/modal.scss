@@ -29,6 +29,12 @@
   height: 20rem;
 }
 
+.djsuperadmin-errorbanner {
+  display: flex;
+  justify-content: center;
+  background-color: red;
+  color: white;
+}
 
 .djsuperadmin-btnscontainer {
     display: flex;

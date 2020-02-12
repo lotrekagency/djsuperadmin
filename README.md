@@ -38,7 +38,7 @@ And import all the required js files in the footer
 
 ## Usage
 
-Define your `custom Content` model using `DjSuperAdminMixin`
+Define your `custom Content` model using `DjSuperAdminMixin` and provide an endpoint to GET/PATCH your content
 
 ```py
 from django.db import models

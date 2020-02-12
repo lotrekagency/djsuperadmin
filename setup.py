@@ -1,7 +1,5 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
 
 setup(
     name='djsuperadmin',
@@ -9,12 +7,12 @@ setup(
     url='https://github.com/lotrekagency/djsuperadmin',
     install_requires=[],
     dependency_links=[],
-    long_description=long_description,
+    long_description=open("README.rst", "r").read(),
     description="Edit contents directly on your page with Django",
     license="MIT",
     author="Lotrèk",
     author_email="dimmitutto@lotrek.it",
-    packages=find_packages(),
+    packages=['djsuperadmin', 'djsuperadmin.templatetags'],
     include_package_data=True,
     classifiers=[
         'Environment :: Web Environment',

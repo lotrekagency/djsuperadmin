@@ -7,19 +7,13 @@ setup(
     name='djsuperadmin',
     version='0.0.1',
     url='https://github.com/lotrekagency/djsuperadmin',
-    install_requires=[
-        'django-hvad @ https://github.com/lotrekagency/django-hvad/archive/master.zip',
-        'djangorestframework>=3.9.2',
-    ],
-    dependency_links=[
-        # Make sure to include the `#egg` portion so the `install_requires` recognizes the package
-        'git+ssh://git@github.com/lotrekagency/django-hvad.git@master#egg=django-hvad-lotrek-1.8.0'
-    ],
+    install_requires=[],
+    dependency_links=[],
     long_description=long_description,
-    description="Insuperable content editing",
+    description="Edit contents directly on your page with Django",
     license="MIT",
-    author="Gabriele Baldi",
-    author_email="gabriele.baldi.01@gmail.com",
+    author="Lotrèk",
+    author_email="dimmitutto@lotrek.it",
     packages=find_packages(),
     include_package_data=True,
     classifiers=[

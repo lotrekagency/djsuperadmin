@@ -1,25 +1,39 @@
-# djSuperAdmin
+# DjSuperAdmin
 
-**In your settings.py**
+✍🏻 Edit contents directly on your page with Django
+
+[![Latest Version](https://img.shields.io/pypi/v/djsuperadmin.svg)](https://pypi.python.org/pypi/djsuperadmin/)
+[![codecov](https://codecov.io/gh/lotrekagency/djsuperadmin/branch/master/graph/badge.svg)](https://codecov.io/gh/lotrekagency/djsuperadmin)
+[![Build Status](https://travis-ci.org/lotrekagency/djsuperadmin.svg?branch=master)](https://travis-ci.org/lotrekagency/djsuperadmin)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/lotrekagency/djsuperadmin/blob/master/LICENSE)
+
+## Installation
+
+```sh
+pip install djsuperadmin
+```
+
+## Setup
+
+Add `djsuperadmin` to your `INSTALLED_APPS` in `settings.py`
+
 ```py
 INSTALLED_APPS = [
-    'rest_framework',
-    'hvad',
+    # ...
     'djsuperadmin'
-    # Django modules
-    ...
-]
-
-
-
-context_processors = [
-    ...
-    'djsuperadmin.context_processors.djsuperadmin'
-    ...
 ]
 ```
 
-**In your project/urls.py**
+And import all the required js files in your footer
+
+```html
+{% load djsuperadmintag %}
+
+{% djsuperadminjs %}
+```
+
+If you want to use the internal content ready to use, modify `urls.py`
+
 ```py
 urlpatterns = [
     ...
@@ -27,36 +41,38 @@ urlpatterns = [
 ]
 ```
 
-**In your template.html**
+## Usage
+
+Define your custom content model using `DjSuperAdminMixin`
+
+```py
+from django.db import models
+from djsuperadmin.mixins import DjSuperAdminMixin
+
+
+class Content(models.Model, DjSuperAdminMixin):
+    identifier = models.CharField(max_length=200, unique=True)
+    content = models.TextField()
+
+    @property
+    def superadmin_get_url(self):
+        return '/api/content'
+
+    @property
+    def superadmin_patch_url(self):
+        return '/api/content'
+```
+
+Then in your template
+
 ```html
 {% load djsuperadmintag %}
-```
-If you want use CKEditor
-```html
-<body>
-    <div>
-        {% content 'customcontent_id' %}
-    </div>
-</body>
-```
-If you want a raw content (no html needed)
-```html
+
+...
+
 <body>
     <p>
-        {% content_raw 'customcontent_id' %}
+        {% superadmin_content your_object 'your_object_attribute' %}
     </p>
 </body>
-```
-If you want an object content
-```html
-<body>
-    <p>
-        {% content_obj your_object 'your_object_attribute' %}
-    </p>
-</body>
-```
-```html
-<footer>
-    {{djsuperadminjs}}
-</footer>
 ```

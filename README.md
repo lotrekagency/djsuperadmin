@@ -24,7 +24,7 @@ INSTALLED_APPS = [
 ]
 ```
 
-And import all the required js files in your footer
+And import all the required js files in the footer
 
 ```html
 {% load djsuperadmintag %}
@@ -32,35 +32,27 @@ And import all the required js files in your footer
 {% djsuperadminjs %}
 ```
 
-If you want to use the internal content ready to use, modify `urls.py`
-
-```py
-urlpatterns = [
-    ...
-    url(r'^djsuperadmin/', include('djsuperadmin.urls'))
-]
-```
-
 ## Usage
 
-Define your custom content model using `DjSuperAdminMixin`
+Define your `custom Content` model using `DjSuperAdminMixin`
 
 ```py
 from django.db import models
 from djsuperadmin.mixins import DjSuperAdminMixin
 
 
-class Content(models.Model, DjSuperAdminMixin):
+class GenericContent(models.Model, DjSuperAdminMixin):
+
     identifier = models.CharField(max_length=200, unique=True)
     content = models.TextField()
 
     @property
     def superadmin_get_url(self):
-        return '/api/content'
+        return f'/api/content/{self.pk}'
 
     @property
     def superadmin_patch_url(self):
-        return '/api/content'
+        return f'/api/content/{self.pk}'
 ```
 
 Then in your template

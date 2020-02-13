@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='djsuperadmin',
-    version='0.0.1',
+    version='0.9.0',
     url='https://github.com/lotrekagency/djsuperadmin',
     install_requires=[],
     dependency_links=[],

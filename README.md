@@ -7,6 +7,10 @@
 [![Build Status](https://travis-ci.org/lotrekagency/djsuperadmin.svg?branch=master)](https://travis-ci.org/lotrekagency/djsuperadmin)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/lotrekagency/djsuperadmin/blob/master/LICENSE)
 
+## Watch the video to see how it works
+
+[![Watch the video](https://img.youtube.com/vi/dunHa2HvoE0/0.jpg)](https://youtu.be/dunHa2HvoE0)
+
 ## Installation
 
 ```sh
@@ -34,7 +38,7 @@ And import all the required js files in the footer
 
 ## Usage
 
-Define your `custom Content` model using `DjSuperAdminMixin`
+Define your `custom Content` model using `DjSuperAdminMixin` and provide an endpoint to GET/PATCH your content
 
 ```py
 from django.db import models

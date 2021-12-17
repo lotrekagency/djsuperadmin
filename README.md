@@ -7,9 +7,9 @@
 [![Build Status](https://travis-ci.org/lotrekagency/djsuperadmin.svg?branch=master)](https://travis-ci.org/lotrekagency/djsuperadmin)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/lotrekagency/djsuperadmin/blob/master/LICENSE)
 
-## Watch the video to see how it works
+## Here how it works!
 
-[![Watch the video](https://img.youtube.com/vi/dunHa2HvoE0/0.jpg)](https://youtu.be/dunHa2HvoE0)
+![DjSuperAdmin demo](./demo.gif)
 
 ## Installation
 

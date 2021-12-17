@@ -1,15 +1,11 @@
-# DjSuperAdmin
+# DjSuperAdmin [![PyPI](https://img.shields.io/pypi/v/djsuperadmin?style=flat-square)](https://pypi.org/project/djsuperadmin/) ![Codecov](https://img.shields.io/codecov/c/github/lotrekagency/djsuperadmin?style=flat-square) ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/lotrekagency/djsuperadmin/Test,%20Coverage%20and%20Release?style=flat-square) [![GitHub](https://img.shields.io/github/license/lotrekagency/camomilla?style=flat-square)](./LICENSE)
 
 ✍🏻 Edit contents directly on your page with Django
 
-[![Latest Version](https://img.shields.io/pypi/v/djsuperadmin.svg)](https://pypi.python.org/pypi/djsuperadmin/)
-[![codecov](https://codecov.io/gh/lotrekagency/djsuperadmin/branch/master/graph/badge.svg)](https://codecov.io/gh/lotrekagency/djsuperadmin)
-[![Build Status](https://travis-ci.org/lotrekagency/djsuperadmin.svg?branch=master)](https://travis-ci.org/lotrekagency/djsuperadmin)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/lotrekagency/djsuperadmin/blob/master/LICENSE)
 
 ## Here how it works!
 
-![DjSuperAdmin demo](./demo.gif)
+<img src="https://github.com/lotrekagency/djsuperadmin/raw/master/demo.gif" alt="DjSuperAdmin demo" style="width: 100%;">
 
 ## Installation
 

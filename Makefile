@@ -6,5 +6,4 @@ clean:
 
 test: clean
 	@flake8 djsuperadmin
-	@pytest --cov djsuperadmin -s --cov-report term-missing
-
+	@pytest --cov=djsuperadmin -s --cov-report=xml --cov-report=term-missing

@@ -1,10 +1,9 @@
-
 .djsuperadmin-background {
   position: fixed;
   top: 0;
   width: 100%;
   height: 100vh;
-  background: #4a4a4aa1;
+  background: #060a1ec4;
   z-index: 10000;
 }
 .djsuperadmin-logout {
@@ -25,44 +24,59 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 35rem;
-  height: 20rem;
 }
 
 .djsuperadmin-errorbanner {
   display: flex;
   justify-content: center;
-  background-color: red;
+  background-color: #ff3535;
+  color: #ff3535;
+  overflow: hidden;
+  margin: 1px;
+  max-height: 0px;
+  transition: all 0.5s ease-in-out;
+}
+
+.djsuperadmin-errorbanner.active {
   color: white;
+  max-height: 200px;
 }
 
 .djsuperadmin-btnscontainer {
-    display: flex;
-    justify-content: center;
+  position: relative;
 }
 
 .djsuperadmin-btn {
-  background: #CCD857;
-  color: white;
-  font-family: monospace;
-  padding: 0.5rem;
-  border: 1px solid;
-  border-radius: 50%;
+  position: absolute;
+  background: #27347a;
+  color: #f8f8f8;
+  top: 7px;
+  left: 50%;
   transform: translateX(-50%);
-  margin-top: 1rem;
-  margin-left: 1rem;
-  margin-right: 1rem;
-  cursor: pointer;
+  border-radius: 0 5px;
+  border: 1px solid white;
+  font-size: 12px;
+  padding: 4px 28px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  line-height: 14px;
 }
-
-
+.cke_editor_editor {
+  border: 1px solid #031056 !important;
+}
 .raw-editor {
-  background: white;
+  background: #f8f8f8;
   width: 100%;
-  min-height: 15rem;
-  font-size: 1.5rem;
+  font-size: 1rem;
   display: block;
-  border-radius: .5rem;
+  width: 400px;
+  max-width: calc(100vw - 20px);
+  border: 1px solid #031056;
+  text-align-last: center;
+  max-height: 400px;
+}
+.raw-editor:focus {
+  outline: none;
 }
 .ql-container {
   background: white;
@@ -71,7 +85,7 @@
   background: white;
 }
 
-span.djsuperadmin{
+span.djsuperadmin {
   border: 2px #ff5050 dotted;
   border-radius: 6px;
   //padding: 0.2rem .5rem;

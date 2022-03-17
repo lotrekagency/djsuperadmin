@@ -24,13 +24,12 @@ const csrftoken = getCookie('csrftoken');
 
 var classname = document.getElementsByClassName("djsuperadmin");
 var content;
-var editor_mode = 1
+var editor_mode = 0
 var patch_content_url = null;
 
 var background;
 var container;
 var btnSave;
-var btnCancel;
 var clickedElement;
 var errorBanner;
 /**
@@ -69,15 +68,15 @@ var handleClick = function (event) {
 
 }
 
-var generateCacheAttr = function() {
-  return '?cache=' + ("" + (Math.random() * 100) + "" + Date.now()).replace('.', '');
+var generateCacheAttr = function () {
+    return '?cache=' + ("" + (Math.random() * 100) + "" + Date.now()).replace('.', '');
 }
 
 var getContent = function (element) {
-    var attribute = element.getAttribute("data-djsa");
-    var get_content_url = element.getAttribute("data-getcontenturl");
-    patch_content_url = element.getAttribute("data-patchcontenturl");
-    editor_mode = element.getAttribute("data-mode");
+    var attribute = element.getAttribute("data-djsa-id");
+    var get_content_url = element.getAttribute("data-djsa-getcontenturl");
+    patch_content_url = element.getAttribute("data-djsa-spatchcontenturl");
+    editor_mode = element.getAttribute("data-djsa-mode");
     var options = getOptions('GET');
     if (!get_content_url) {
         var url = "/djsuperadmin/contents/" + attribute + "/";
@@ -105,24 +104,26 @@ var pushContent = (htmlcontent) => {
         clickedElement.innerHTML = htmlcontent;
         background.remove();
     }).catch(function (error) {
+        errorBanner.classList.add('active')
         errorBanner.innerHTML = error;
         setTimeout(function () {
-            errorBanner.innerHTML = '';
+            errorBanner.classList.remove('active')
         }, 2000);
     });
 };
+
+
+var setEditorHeight = (editor) => {
+    editor.style.height = "";
+    editor.style.height = editor.scrollHeight + 10 + "px"
+}
 
 var buildModal = (editor_mode = editor_mode) => {
     background = document.createElement('div');
     container = document.createElement('div');
     btnSave = document.createElement("button");
-    btnCancel = document.createElement("button");
-
-    btnSave.innerHTML = '💾';
+    btnSave.innerHTML = 'SAVE';
     btnSave.classList.add('djsuperadmin-btn');
-    btnCancel.innerHTML = '❌';
-    btnCancel.classList.add('djsuperadmin-btn');
-
     background.classList.add("djsuperadmin-background");
     container.classList.add("djsuperadmin-editor");
 
@@ -137,7 +138,8 @@ var buildModal = (editor_mode = editor_mode) => {
             editor.className = "raw-editor";
             editor_content = () => { return editor.value }
             container.appendChild(editor);
-
+            setEditorHeight(editor)
+            editor.addEventListener('input', () => setEditorHeight(editor), false);
             break;
         case '2':
             // code block
@@ -147,7 +149,7 @@ var buildModal = (editor_mode = editor_mode) => {
             editor.id = 'editor';
             container.appendChild(editor);
             initCKEditor();
-            editor = CKEDITOR.document.getById( 'editor' );
+            editor = CKEDITOR.document.getById('editor');
             editor.setHtml(content.content)
             editor_content = () => {
                 return CKEDITOR.instances.editor.getData();
@@ -158,14 +160,13 @@ var buildModal = (editor_mode = editor_mode) => {
     var btnsContainer = document.createElement('div');
     btnsContainer.classList.add('djsuperadmin-btnscontainer');
     btnsContainer.appendChild(btnSave);
-    btnsContainer.appendChild(btnCancel);
     container.appendChild(errorBanner);
     container.appendChild(btnsContainer);
     btnSave.addEventListener('click', function () {
         pushContent(editor_content());
     }, false);
-    btnCancel.addEventListener('click',function () {
-        background.remove();
+    background.addEventListener('click', function (e) {
+        if (e.target == background) background.remove();
     }, false);
 };
 

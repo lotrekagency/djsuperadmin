@@ -16,7 +16,7 @@ def test_content_rendering_admin_user(rf, admin_user):
     content = Content.objects.create(identifier="1", content="Try")
     request = rf.get("/customer/details")
     request.user = admin_user
-    expected_html = '<span class="djsuperadmin" data-mode="1" data-djsa ="1" data-getcontenturl="/api/content" data-patchcontenturl="/api/content">Try</span>'
+    expected_html = '<span class="djsuperadmin" data-djsa-mode="1" data-djsa-id="1" data-djsa-getcontenturl="/api/content" data-djsa-patchcontenturl="/api/content">Try</span>'
     assert superadmin_content({"request": request}, content, "content") == expected_html
 
 

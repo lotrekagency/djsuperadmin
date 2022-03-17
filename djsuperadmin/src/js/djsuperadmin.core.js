@@ -75,7 +75,7 @@ var generateCacheAttr = function () {
 var getContent = function (element) {
     var attribute = element.getAttribute("data-djsa-id");
     var get_content_url = element.getAttribute("data-djsa-getcontenturl");
-    patch_content_url = element.getAttribute("data-djsa-spatchcontenturl");
+    patch_content_url = element.getAttribute("data-djsa-patchcontenturl");
     editor_mode = element.getAttribute("data-djsa-mode");
     var options = getOptions('GET');
     if (!get_content_url) {

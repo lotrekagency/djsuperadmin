@@ -5,6 +5,7 @@ __pycache__
 node_modules/*
 
 .coverage
+coverage.xml
 
 build/
 dist/

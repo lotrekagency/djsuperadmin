@@ -8,11 +8,11 @@ class Content(models.Model, DjSuperAdminMixin):
 
     @property
     def superadmin_get_url(self):
-        return '/api/content'
+        return "/api/content"
 
     @property
     def superadmin_patch_url(self):
-        return '/api/content'
+        return "/api/content"
 
 
 class ContentWithoutUrls(models.Model, DjSuperAdminMixin):

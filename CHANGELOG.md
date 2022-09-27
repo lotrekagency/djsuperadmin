@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.0 (2022-09-27)
+### Feature
+* Added inline editor ([`d123ee3`](https://github.com/lotrekagency/djsuperadmin/commit/d123ee3756691283c3b64beab4b52585c14d6db9))
+
 ## v0.10.0 (2022-03-17)
 ### Feature
 * Added raw content editor mode and little restyle 💅 ([`c1025ab`](https://github.com/lotrekagency/djsuperadmin/commit/c1025ab1dd05e0cf3022b476c6179845b78ec61a))

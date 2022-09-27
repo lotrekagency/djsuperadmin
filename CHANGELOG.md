@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.2 (2022-09-27)
+### Fix
+* Added min height and min width to djsuperadmin span ([`6c50bf9`](https://github.com/lotrekagency/djsuperadmin/commit/6c50bf98a7304e9df63cfb1e0bf5a3d24e71b72f))
+
 ## v0.11.1 (2022-09-27)
 ### Fix
 * Display edit status with border animation in inplace editing ([`f87a538`](https://github.com/lotrekagency/djsuperadmin/commit/f87a538f40cf5c0617f622549b1272f8cbd38fe2))

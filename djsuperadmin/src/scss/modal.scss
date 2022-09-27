@@ -86,7 +86,16 @@
 }
 
 span.djsuperadmin {
-  border: 2px #ff5050 dotted;
+  // dashed border back magic
+  background: 
+  linear-gradient(90deg, red 50%, transparent 0) repeat-x,
+  linear-gradient(90deg, red 50%, transparent 0) repeat-x,
+  linear-gradient(0deg, red 50%, transparent 0) repeat-y,
+  linear-gradient(0deg, red 50%, transparent 0) repeat-y;
+  background-size: 6px 2px, 6px 2px, 2px 6px, 2px 6px;
+  background-position: 0 0, 0 100%, 0 0, 100% 0;
+  // end dashed border
+
   border-radius: 6px;
   //padding: 0.2rem .5rem;
   z-index: 1000000;

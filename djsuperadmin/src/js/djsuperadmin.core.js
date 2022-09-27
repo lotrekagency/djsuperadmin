@@ -1,5 +1,5 @@
 import { initCKEditor } from './djsuperadmin.ckeditor'
-
+import 'regenerator-runtime/runtime'
 
 var getCookie = (name) => {
     var value = "; " + document.cookie;
@@ -92,7 +92,7 @@ var getContent = function (element) {
     });
 };
 
-var pushContent = (htmlcontent) => {
+var pushContent = async (htmlcontent) => {
     content.content = htmlcontent;
     if (!patch_content_url) {
         var url = '/djsuperadmin/contents/' + content.id + '/';
@@ -101,7 +101,7 @@ var pushContent = (htmlcontent) => {
     }
     var options = getOptions('PATCH');
     options['body'] = JSON.stringify(content);
-    fetch(url + generateCacheAttr(), options).then(status).then(json).then(function (data) {
+    await fetch(url + generateCacheAttr(), options).then(status).then(json).then(function (data) {
         clickedElement.innerHTML = htmlcontent;
         background.remove();
     }).catch(function (error) {
@@ -121,7 +121,17 @@ var setEditorHeight = (editor) => {
 }
 
 var pushOnEnter = (editor) => {
-    editor.addEventListener("keyup", ({ key }) => key === "Enter" && pushContent(editor_content()), false)
+    editor.addEventListener("keydown", async (event) => {
+        const { keyCode } = event;
+        if(keyCode === 13) {
+            event.preventDefault()
+            await pushContent(editor_content())
+            if (editor.hasAttribute("contenteditable")){
+                editor.removeAttribute("contenteditable");
+            }
+            return false;
+        }
+    }, false)
 }
 
 var buildModal = (editor_mode = editor_mode) => {
@@ -167,8 +177,8 @@ var buildModal = (editor_mode = editor_mode) => {
     btnsContainer.appendChild(btnSave);
     container.appendChild(errorBanner);
     container.appendChild(btnsContainer);
-    btnSave.addEventListener('click', function () {
-        pushContent(editor_content());
+    btnSave.addEventListener('click', async () => {
+        await pushContent(editor_content());
     }, false);
     background.addEventListener('mousedown', function (e) {
         if (e.target == background) background.remove();
@@ -177,13 +187,13 @@ var buildModal = (editor_mode = editor_mode) => {
 }
 
 var inPlaceEdit = (element) => {
-    editor = document.createElement("input");
-    editor.value = content.content;
-    editor.className = "inline-editor";
-    editor_content = () => { return editor.value }
-    element.innerHTML = ""
-    element.appendChild(editor)
-    editor.addEventListener('blur', () => pushContent(editor_content()), false);
+    editor = element;
+    editor.setAttribute("contenteditable", "true")
+    editor_content = () => { return element.innerHTML }
+    editor.addEventListener('blur', async () => {
+        await pushContent(editor_content());
+        editor.removeAttribute("contenteditable");
+    }, false);
     pushOnEnter(editor)
     editor.focus()
 };

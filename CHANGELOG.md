@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.1 (2022-09-27)
+### Fix
+* Display edit status with border animation in inplace editing ([`f87a538`](https://github.com/lotrekagency/djsuperadmin/commit/f87a538f40cf5c0617f622549b1272f8cbd38fe2))
+* Fixed inplace editing style with contenteditable prop ([`d6ce4c3`](https://github.com/lotrekagency/djsuperadmin/commit/d6ce4c345a7e158aff158549d6cf6b5016d6868d))
+
 ## v0.11.0 (2022-09-27)
 ### Feature
 * Added inline editor ([`d123ee3`](https://github.com/lotrekagency/djsuperadmin/commit/d123ee3756691283c3b64beab4b52585c14d6db9))

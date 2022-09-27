@@ -41,12 +41,17 @@ def djsuperadminjs(context):
         and context["request"].user.is_superuser
     ):
         superadmin_basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-        inplace = 'true' if DJSUPERADMIN_SETTINGS.get("INPLACE_EDIT", False) else 'false'
+        inplace = (
+            "true" if DJSUPERADMIN_SETTINGS.get("INPLACE_EDIT", False) else "false"
+        )
         with open(
             os.path.join(superadmin_basedir, "dist", "djsuperadmin.bundle.js"),
             "r",
         ) as js_file:
             js = '<script src="https://cdn.ckeditor.com/4.12.1/standard/ckeditor.js"></script>'
-            js += '<script>var djsa_logout_url="%s";var inplace_edit_enabled = %s;%s</script>' % ("", inplace, js_file.read())
+            js += (
+                '<script>var djsa_logout_url="%s";var inplace_edit_enabled = %s;%s</script>'
+                % ("", inplace, js_file.read())
+            )
         return mark_safe(js)
     return ""

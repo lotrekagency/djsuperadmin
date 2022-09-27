@@ -1,5 +1,9 @@
 import pytest
-from djsuperadmin.templatetags.djsuperadmintag import superadmin_content, superadmin_raw_content, djsuperadminjs
+from djsuperadmin.templatetags.djsuperadmintag import (
+    superadmin_content,
+    superadmin_raw_content,
+    djsuperadminjs,
+)
 from testapp.models import Content, ContentWithoutUrls
 
 
@@ -18,12 +22,16 @@ def test_content_rendering_simple_user(rf, django_user_model):
     request.user = user
     assert superadmin_content({"request": request}, content, "content") == "Try"
 
+
 def test_content_raw_rendering_admin_user(rf, admin_user):
     content = Content.objects.create(identifier="1", content="Try")
     request = rf.get("/")
     request.user = admin_user
     expected_html = '<span class="djsuperadmin" data-djsa-mode="0" data-djsa-id="1" data-djsa-getcontenturl="/api/content" data-djsa-patchcontenturl="/api/content">Try</span>'
-    assert superadmin_raw_content({"request": request}, content, "content") == expected_html
+    assert (
+        superadmin_raw_content({"request": request}, content, "content")
+        == expected_html
+    )
 
 
 def test_content_raw_rendering_simple_user(rf, django_user_model):
@@ -32,6 +40,7 @@ def test_content_raw_rendering_simple_user(rf, django_user_model):
     request = rf.get("/")
     request.user = user
     assert superadmin_raw_content({"request": request}, content, "content") == "Try"
+
 
 def test_djsuperadminjs_rendering_admin_user(rf, admin_user):
     request = rf.get("/")

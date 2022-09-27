@@ -27,6 +27,8 @@ var content;
 var editor_mode = 0
 var patch_content_url = null;
 
+var editor;
+var editor_content;
 var background;
 var container;
 var btnSave;
@@ -76,7 +78,6 @@ var getContent = function (element) {
     var attribute = element.getAttribute("data-djsa-id");
     var get_content_url = element.getAttribute("data-djsa-getcontenturl");
     patch_content_url = element.getAttribute("data-djsa-patchcontenturl");
-    editor_mode = element.getAttribute("data-djsa-mode");
     var options = getOptions('GET');
     if (!get_content_url) {
         var url = "/djsuperadmin/contents/" + attribute + "/";
@@ -85,7 +86,7 @@ var getContent = function (element) {
     }
     fetch(url + generateCacheAttr(), options).then(status).then(json).then(function (data) {
         content = data;
-        buildModal(editor_mode);
+        startEditing(element);
     }).catch(function (error) {
         console.log(error);
     });
@@ -104,6 +105,7 @@ var pushContent = (htmlcontent) => {
         clickedElement.innerHTML = htmlcontent;
         background.remove();
     }).catch(function (error) {
+        if (!errorBanner) return
         errorBanner.classList.add('active')
         errorBanner.innerHTML = error;
         setTimeout(function () {
@@ -118,6 +120,10 @@ var setEditorHeight = (editor) => {
     editor.style.height = editor.scrollHeight + 10 + "px"
 }
 
+var pushOnEnter = (editor) => {
+    editor.addEventListener("keyup", ({ key }) => key === "Enter" && pushContent(editor_content()), false)
+}
+
 var buildModal = (editor_mode = editor_mode) => {
     background = document.createElement('div');
     container = document.createElement('div');
@@ -129,8 +135,6 @@ var buildModal = (editor_mode = editor_mode) => {
 
     background.appendChild(container);
     document.body.appendChild(background);
-    var editor = null;
-    var editor_content = null;
     switch (editor_mode) {
         case '0':
             editor = document.createElement("textarea");
@@ -140,6 +144,7 @@ var buildModal = (editor_mode = editor_mode) => {
             container.appendChild(editor);
             setEditorHeight(editor)
             editor.addEventListener('input', () => setEditorHeight(editor), false);
+            pushOnEnter(editor)
             break;
         case '2':
             // code block
@@ -165,9 +170,31 @@ var buildModal = (editor_mode = editor_mode) => {
     btnSave.addEventListener('click', function () {
         pushContent(editor_content());
     }, false);
-    background.addEventListener('click', function (e) {
+    background.addEventListener('mousedown', function (e) {
         if (e.target == background) background.remove();
     }, false);
+    editor.focus()
+}
+
+var inPlaceEdit = (element) => {
+    editor = document.createElement("input");
+    editor.value = content.content;
+    editor.className = "inline-editor";
+    editor_content = () => { return editor.value }
+    element.innerHTML = ""
+    element.appendChild(editor)
+    editor.addEventListener('blur', () => pushContent(editor_content()), false);
+    pushOnEnter(editor)
+    editor.focus()
+};
+
+var startEditing = (element) => {
+    editor_mode = element.getAttribute("data-djsa-mode");
+    if (inplace_edit_enabled && editor_mode == "0"){
+        inPlaceEdit(element)
+    } else {
+        buildModal(editor_mode)
+    }
 };
 
 for (var i = 0; i < classname.length; i++) {

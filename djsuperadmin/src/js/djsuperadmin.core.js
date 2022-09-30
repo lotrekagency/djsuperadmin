@@ -26,6 +26,7 @@ var classname = document.getElementsByClassName("djsuperadmin");
 var content;
 var editor_mode = 0
 var patch_content_url = null;
+var pushing = null;
 
 var editor;
 var editor_content;
@@ -94,6 +95,8 @@ var getContent = function (element) {
 
 var pushContent = async (htmlcontent) => {
     content.content = htmlcontent;
+    if (`${pushing}` == `${content.id}`) return
+    pushing = content.id;
     if (!patch_content_url) {
         var url = '/djsuperadmin/contents/' + content.id + '/';
     } else {
@@ -111,7 +114,7 @@ var pushContent = async (htmlcontent) => {
         setTimeout(function () {
             errorBanner.classList.remove('active')
         }, 2000);
-    });
+    }).finally(() => pushing = null);
 };
 
 

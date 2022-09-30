@@ -94,6 +94,7 @@ var getContent = function (element) {
 };
 
 var pushContent = async (htmlcontent) => {
+    var currentE = clickedElement;
     content.content = htmlcontent;
     if (`${pushing}` == `${content.id}`) return
     pushing = content.id;
@@ -105,7 +106,7 @@ var pushContent = async (htmlcontent) => {
     var options = getOptions('PATCH');
     options['body'] = JSON.stringify(content);
     await fetch(url + generateCacheAttr(), options).then(status).then(json).then(function (data) {
-        clickedElement.innerHTML = htmlcontent;
+        currentE.innerHTML = htmlcontent;
         background.remove();
     }).catch(function (error) {
         if (!errorBanner) return

@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.3 (2022-09-30)
+### Fix
+* Fix html replacements in wrong elements ([`213cb26`](https://github.com/lotrekagency/djsuperadmin/commit/213cb26cea536b5ebd0234fe760d179682ae44cb))
+* Fix multiple patch in inplace editor ([`03af9a5`](https://github.com/lotrekagency/djsuperadmin/commit/03af9a5a3b14e6094ab73cca0aa9b3a633634a69))
+
 ## v0.11.2 (2022-09-27)
 ### Fix
 * Added min height and min width to djsuperadmin span ([`6c50bf9`](https://github.com/lotrekagency/djsuperadmin/commit/6c50bf98a7304e9df63cfb1e0bf5a3d24e71b72f))

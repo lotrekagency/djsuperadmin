@@ -1,4 +1,5 @@
 import os
+from djsuperadmin.models import Content
 from django import template
 from django.utils.safestring import mark_safe
 from ..settings import DJSUPERADMIN_SETTINGS
@@ -25,13 +26,17 @@ register = template.Library()
 
 
 @register.simple_tag(takes_context=True)
-def superadmin_content(context, obj, attribute):
-    return _get_obj_content(context, obj, attribute)
+def superadmin_content(context, *args):
+    if len(args) == 1 and isinstance(args[0], str):
+        args = Content.get_from_default_data(args[0]), "data"
+    return _get_obj_content(context, args[0], args[1])
 
 
 @register.simple_tag(takes_context=True)
-def superadmin_raw_content(context, obj, attribute):
-    return _get_obj_content(context, obj, attribute, editor_mode=0)
+def superadmin_raw_content(context, *args):
+    if len(args) == 1 and isinstance(args[0], str):
+        args = Content.get_from_default_data(args[0]), "data"
+    return _get_obj_content(context, args[0], args[1], editor_mode=0)
 
 
 @register.simple_tag(takes_context=True)

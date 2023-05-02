@@ -32,7 +32,27 @@ And import all the required js files in the footer
 {% djsuperadminjs %}
 ```
 
-## Usage
+## Usage:
+
+### Simple:
+
+Djsuperadmin now comes with its own content model. You can use it directly in templates, like this:
+
+```html
+{% load djsuperadmintag %}
+
+...
+
+<body>
+    <p>
+        {% superadmin_content 'Some default content' %}
+    </p>
+</body>
+```
+
+Try also the raw content ```{% superadmin_content_raw 'Some default content' %}``` to edit things without a wysiwyg !
+
+### Advanced:
 
 Define your `custom Content` model using `DjSuperAdminMixin` and provide an endpoint to GET/PATCH your content
 
@@ -67,4 +87,13 @@ Then in your template
         {% superadmin_content your_object 'your_object_attribute' %}
     </p>
 </body>
+```
+
+
+## Settings:
+
+Try out the new djsuperadmin in_place mode for raw content! Type in your settings.py:
+
+```python
+DJSUPERADMIN = {"INPLACE_EDIT": True}
 ```

@@ -1,0 +1,16 @@
+# DjSuperAdmin
+
+> Edit contents directly on your page
+
+A tiny, dependency-free Django app that turns any content on your templates into an inline, in-browser editor for superusers.
+
+## Table of Contents
+
+
+### Other
+
+- [Changelog](/djsuperadmin/Changelog.md)
+- [Contributing to djsuperadmin](/djsuperadmin/Contribute.md)
+- [How to](/djsuperadmin/How to.md)
+- [QuickStart](/djsuperadmin/QuickStart.md)
+- [Untitled](/djsuperadmin/License.md)

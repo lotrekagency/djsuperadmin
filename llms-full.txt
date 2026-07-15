@@ -1,0 +1,683 @@
+---
+url: /djsuperadmin/QuickStart.md
+---
+# QuickStart
+
+Get from zero to a first editable content in a few minutes. DjSuperAdmin is a
+tiny Django app (no runtime dependencies beyond Django) that lets **superusers**
+edit page contents inline, right in the browser.
+
+Compatible with Django 2.0 → 6.0 and Python 3.6+.
+
+## 1. Install
+
+```bash
+pip install djsuperadmin
+```
+
+Using [uv](https://docs.astral.sh/uv/)? `uv add djsuperadmin`.
+
+## 2. Add it to `INSTALLED_APPS`
+
+```python
+# settings.py
+INSTALLED_APPS = [
+    # ...
+    "djsuperadmin",
+]
+```
+
+## 3. Include the urls
+
+Needed for the one-argument tag form used below (it stores contents in
+DjSuperAdmin's built-in `Content` model). Add the urls to your root URLconf:
+
+```python
+# urls.py
+from django.urls import path, include
+
+urlpatterns = [
+    # ...
+    path("", include("djsuperadmin.urls")),
+]
+```
+
+> If you only ever use the two-argument form with your own model, you can skip
+> this step — see [How to](/How%20to/).
+
+Then apply the migration for the built-in model:
+
+```bash
+python manage.py migrate
+```
+
+## 4. Load the tags and inject the JS
+
+In your base template, load the template tag library and drop
+`{% djsuperadminjs %}` **once** in the footer, just before `</body>`:
+
+```html
+{% load djsuperadmintag %}
+<!DOCTYPE html>
+<html>
+  <body>
+    <!-- your page -->
+
+    {% djsuperadminjs %}
+  </body>
+</html>
+```
+
+`{% djsuperadminjs %}` injects the DjSuperAdmin bundle (which lazy-loads SunEditor from a CDN on first edit).
+It renders **only for authenticated superusers** — for everyone else it outputs
+nothing.
+
+## 5. Add your first editable content
+
+Anywhere in the page body, add:
+
+```html
+{% superadmin_content 'Hello world' %}
+```
+
+The one-argument form uses the built-in `Content` model, keyed by a hash of the
+default text. The content row is created automatically the first time the tag is
+rendered, starting with `Hello world` as its value.
+
+## 6. Edit it
+
+1. Log in at `/admin/` as a **superuser**.
+2. Open the page. Superusers see the content wrapped in an editable element
+   (class `djsuperadmin`); everyone else just sees the plain value.
+3. Hover the content — a small toolbar appears with a **✏️ edit** icon (and a
+   **⟲ history** icon if versioning is on). Click edit (or double-click the text)
+   to open the WYSIWYG editor, make your changes, then click outside (or the save
+   button) to store them — shown to all visitors.
+
+That's it — you have a content your editors can change without touching code or
+the admin.
+
+## Next steps
+
+* **[How to →](/How%20to/)** — bind the editor to your own model with
+  `DjSuperAdminMixin`, use the raw (plain-text) editor with
+  `{% superadmin_raw_content %}`, and enable in-place editing.
+
+---
+
+---
+url: /djsuperadmin/How to.md
+---
+# How to
+
+Practical recipes for the everyday uses of DjSuperAdmin. Every template needs
+the tag library loaded once at the top:
+
+```html
+{% load djsuperadmintag %}
+```
+
+And every page that should be editable needs the JS injected once in the footer —
+see [The `{% djsuperadminjs %}` tag](#the-djsuperadminjs-tag) at the bottom.
+
+## Bare-string content (built-in Content model)
+
+The one-argument form of `superadmin_content` uses DjSuperAdmin's **built-in
+`Content` model**. You pass a default string; it is keyed by a hash of that
+string and auto-created the first time the page renders. No model of your own,
+no migration to write.
+
+```html
+{% load djsuperadmintag %}
+
+<h1>{% superadmin_content 'Welcome to our site' %}</h1>
+```
+
+There is a raw variant that gives a plain textarea instead of the WYSIWYG editor:
+
+```html
+<p>{% superadmin_raw_content 'A short plain-text tagline' %}</p>
+```
+
+::: warning The tag is `superadmin_raw_content`
+Not `superadmin_content_raw`. Mind the word order.
+:::
+
+Because this form is backed by the built-in model and its API view, you **must
+include the DjSuperAdmin URLs** in your project's `urls.py`:
+
+```python
+from django.urls import path, include
+
+urlpatterns = [
+    # ...
+    path('', include('djsuperadmin.urls')),
+]
+```
+
+Without those URLs the editor has no endpoint to read from or save to. (The URLs
+are only required for the bare-string form and the built-in model — the
+model-field form below does not need them.)
+
+## Editing a model field
+
+The two-argument form binds the editor to `obj.<attribute>` on an object you
+already have in the template context. This is the common case: an editable field
+on one of your own models.
+
+```html
+{% load djsuperadmintag %}
+
+<article>
+  <h1>{% superadmin_content page 'title' %}</h1>
+  <div>{% superadmin_content page 'body' %}</div>
+</article>
+```
+
+Superusers see an editable element with class `djsuperadmin` (a `<div>` for
+WYSIWYG, a `<span>` for raw); everyone else sees the plain field value.
+
+For a WYSIWYG (SunEditor) editor use `superadmin_content`. For a plain textarea —
+good for snippets, code, or anything where you don't want markup — use the raw
+variant:
+
+```html
+<pre>{% superadmin_raw_content page 'code_snippet' %}</pre>
+```
+
+Note that for the model-field form to actually save, your model must expose the
+`superadmin_get_url` / `superadmin_patch_url` properties via the
+`DjSuperAdminMixin` — see [Bring your own content model](#bring-your-own-content-model).
+
+## In-place editing
+
+By default, contents open in a small modal for editing. Set the `INPLACE_EDIT`
+option to edit **directly on the page** instead:
+
+```python
+# settings.py
+DJSUPERADMIN = {"INPLACE_EDIT": True}
+```
+
+The default is `False`. When on:
+
+* **raw** contents (`superadmin_raw_content`) become `contenteditable`;
+* **WYSIWYG** contents (`superadmin_content`) become an inline SunEditor — its
+  toolbar docks above the content while editing. **Commit** by clicking anywhere
+  outside the editor, or with the toolbar's save button; **cancel** with
+  Esc. The editor grows to fit its content.
+
+::: tip WYSIWYG renders as a `<div>`
+`superadmin_content` produces block HTML (paragraphs, images), so it is wrapped
+in a `<div>`, not a `<span>`. Place it in a **block context** — e.g.
+`<div>{% superadmin_content ... %}</div>` — not inside a `<p>`, `<h1>`, or other
+inline context, or the browser will eject the block content from the wrapper.
+`superadmin_raw_content` stays an inline `<span>`.
+:::
+
+## Insert images from a media gallery
+
+Give the WYSIWYG editor an image-gallery endpoint and its toolbar gains an
+"insert image from gallery" button:
+
+```python
+# settings.py
+DJSUPERADMIN = {
+    "INPLACE_EDIT": True,
+    "IMAGE_GALLERY_URL": "/api/camomilla/media/",  # your media list endpoint
+    # "IMAGE_UPLOAD_URL": "/api/camomilla/media/upload/",  # optional, for uploads
+}
+```
+
+The endpoint must return JSON in the shape SunEditor expects:
+
+```json
+{
+  "result": [
+    { "src": "https://.../photo-1.jpg", "name": "Photo 1" },
+    { "src": "https://.../photo-2.jpg", "name": "Photo 2" }
+  ]
+}
+```
+
+This is meant to plug into a CMS media library — e.g.
+[camomilla](https://github.com/camomillacms/camomilla-core)'s media gallery: point
+`IMAGE_GALLERY_URL` at its media API and editors can drop existing media straight
+into the content. (See the `example/` project for a working demo endpoint.)
+
+## Version history & revert
+
+Every save keeps the previous value, so editors can roll back a change. Hovering
+the content shows a toolbar with a **⟲ history** icon (next to the ✏️ edit icon);
+it lists the past versions with a timestamp and preview, and clicking one restores
+it — you can review or revert without even opening the editor.
+
+Reverting is just another save — the value you revert *away from* is snapshotted
+too, so a revert is itself undoable.
+
+For the built-in `Content` model this works out of the box (nothing to
+configure). History is capped to the last 20 versions per content; change that
+with:
+
+```python
+# settings.py
+DJSUPERADMIN = {"INPLACE_EDIT": True, "MAX_VERSIONS": 50}
+```
+
+::: tip Your own model opts in
+The history button only shows when the content exposes a `superadmin_history_url`
+(see [Bring your own content model](#bring-your-own-content-model)). The built-in
+model provides it automatically; your own models add it when you want the
+feature.
+:::
+
+## Bring your own content model
+
+You don't have to use the built-in `Content` model. Any of your models can be
+made editable by mixing in `DjSuperAdminMixin` and pointing it at your own API
+endpoint.
+
+The mixin requires two properties — `superadmin_get_url` and
+`superadmin_patch_url`. If they are not defined, the mixin raises
+`NotImplementedError`.
+
+```python
+from django.db import models
+from djsuperadmin.mixins import DjSuperAdminMixin
+
+
+class MyContent(models.Model, DjSuperAdminMixin):
+    body = models.TextField()
+
+    @property
+    def superadmin_get_url(self):
+        return f"/api/mycontent/{self.pk}"
+
+    @property
+    def superadmin_patch_url(self):
+        return f"/api/mycontent/{self.pk}"
+```
+
+Use it in a template exactly like any other model field:
+
+```html
+{% load djsuperadmintag %}
+
+<div>{% superadmin_content mycontent 'body' %}</div>
+```
+
+Now provide the endpoint those two URLs point at. The contract is minimal — no
+DRF required:
+
+* **GET** returns JSON `{"content": <value>}`.
+* **PATCH** receives a body of `{"content": <value>}` and saves it.
+
+```python
+import json
+
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.views import View
+
+from .models import MyContent
+
+
+class MyContentApiView(View):
+    def get(self, request, pk):
+        obj = get_object_or_404(MyContent, pk=pk)
+        return JsonResponse({"content": obj.body})
+
+    def patch(self, request, pk):
+        obj = get_object_or_404(MyContent, pk=pk)
+        payload = json.loads(request.body)
+        obj.body = payload["content"]
+        obj.save()
+        return JsonResponse({"content": obj.body})
+```
+
+```python
+# urls.py
+from django.urls import path
+
+from .views import MyContentApiView
+
+urlpatterns = [
+    path("api/mycontent/<int:pk>", MyContentApiView.as_view()),
+]
+```
+
+That's the whole contract. As long as GET returns `{"content": …}` and PATCH
+accepts `{"content": …}`, the editor works against your model.
+
+### Optional: version history for your model
+
+To light up the **⟲ History** button on your own model, add a third property,
+`superadmin_history_url`, and an endpoint that returns past versions:
+
+```python
+class MyContent(models.Model, DjSuperAdminMixin):
+    body = models.TextField()
+
+    # ...get/patch urls as above...
+
+    @property
+    def superadmin_history_url(self):
+        return f"/api/mycontent/{self.pk}/history"
+```
+
+That endpoint's `GET` must return the versions newest-first:
+
+```json
+{
+  "versions": [
+    { "id": 12, "data": "<p>previous value</p>", "created_at": "2026-07-13T10:00:00" },
+    { "id": 11, "data": "<p>older value</p>",    "created_at": "2026-07-12T09:00:00" }
+  ]
+}
+```
+
+Revert needs no extra endpoint — the editor restores a version by `PATCH`-ing its
+`data` back through your normal save url. You only have to *record* the snapshots
+(e.g. in your PATCH handler, or with `django-reversion`) and expose this list.
+The mixin's default is `None`, so models that don't define it simply show no
+history button.
+
+## Headless usage (SPA / SSR frontends)
+
+The template tags are a convenience for Django-rendered pages, but the editor
+itself is framework-agnostic. Any frontend can drive it by reproducing what the
+tags emit:
+
+1. Render an element with class `djsuperadmin` carrying the same data attributes
+   — `data-djsa-mode` (`1` WYSIWYG / `0` raw), `data-djsa-id`,
+   `data-djsa-getcontenturl`, `data-djsa-patchcontenturl`, and optionally
+   `data-djsa-historyurl` — around the current HTML value.
+2. Load the built bundle and set its config globals (`inplace_edit_enabled`,
+   `djsa_suneditor_js/css`, `djsa_image_gallery_url`, …) before it, exactly as
+   `{% djsuperadminjs %}` does. Because the bundle lives under the app's `static/`
+   directory, Django serves it at `/static/djsuperadmin/djsuperadmin.bundle.js`
+   (run `collectstatic`), so a frontend can just
+   `<script src="/static/djsuperadmin/djsuperadmin.bundle.js">` it.
+
+Only render the markup and load the bundle for users allowed to edit. The bundle
+saves by `fetch`ing your endpoints with the Django **session cookie +
+`X-CSRFToken`**, so the browser must be **same-origin** with the backend (e.g.
+reverse-proxy `/api`, `/admin`, `/static` to Django).
+
+> A ready-made binding for **Astro + camomilla** lives in its own
+> [astro-camomilla-integration](https://github.com/camomillacms/astro-camomilla-integration)
+> project — this repo stays framework-agnostic.
+
+## The `{% djsuperadminjs %}` tag
+
+This tag wires everything together. Place it **once**, in your page footer:
+
+```html
+{% load djsuperadmintag %}
+
+<body>
+  <!-- your page … -->
+
+  {% djsuperadminjs %}
+</body>
+```
+
+It injects the DjSuperAdmin JS bundle that turns the wrapped spans into editors.
+The bundle **lazy-loads [SunEditor](https://github.com/JiHong88/SunEditor) from a
+CDN the first time** a WYSIWYG editor is opened, so pages stay light until you
+actually edit. To self-host the editor (e.g. under a strict CSP), point it at
+your own copy:
+
+```python
+# settings.py
+DJSUPERADMIN = {
+    "SUNEDITOR_JS": "/static/vendor/suneditor.min.js",
+    "SUNEDITOR_CSS": "/static/vendor/suneditor.min.css",
+}
+```
+
+It renders **only for authenticated superusers** — for every other visitor
+(anonymous users, non-superuser staff) it outputs an empty string, so there is
+no extra markup or JS on public page loads. You can leave it in your base
+template unconditionally.
+
+---
+
+---
+url: /djsuperadmin/Contribute.md
+---
+# Contributing to djsuperadmin
+
+First off, thanks for taking the time to contribute! 🎉
+
+**djsuperadmin** is a tiny Django app (no runtime dependencies except Django) that
+lets superusers edit page contents inline in the browser. It's MIT licensed and
+maintained by [Lotrèk](https://www.lotrek.it/). Every contribution helps — bug
+reports, docs fixes, and code all count.
+
+This guide explains how to report issues, set up a development environment, and get
+your changes merged.
+
+## Reporting bugs
+
+Found something broken? Please open an issue on the
+[issue tracker](https://github.com/lotrekagency/djsuperadmin/issues).
+
+A good bug report includes:
+
+* Your Django and Python versions (djsuperadmin is tested from Django 2.2 to 6.0 on
+  Python 3.6+).
+* The template tags you're using and a minimal snippet that reproduces the problem.
+* What you expected to happen vs. what actually happened, plus any traceback.
+
+Before opening a new issue, take a quick look through the existing ones — someone may
+have already reported it.
+
+## Suggesting enhancements
+
+Enhancement ideas are welcome on the same
+[issue tracker](https://github.com/lotrekagency/djsuperadmin/issues). Describe the use
+case you're trying to solve and, if you can, sketch how the API might look. Keep in
+mind that a core goal of this project is to stay small and dependency-free, so we tend
+to favour focused, minimal additions.
+
+## Your first code contribution
+
+Unsure where to begin? Issues labelled `good first issue` or `help wanted` are a great
+place to start. In general the flow is:
+
+1. Fork the repository and clone your fork.
+2. Set up your environment (see below) and run the tests to confirm everything works.
+3. Create a branch, make your change, add or update tests, and open a pull request.
+
+## Development setup
+
+### Prerequisites
+
+* **Python** with [uv](https://docs.astral.sh/uv/) — manages the virtualenv and Python
+  dependencies.
+* **Node** with [pnpm](https://pnpm.io/) — builds the JS bundle and the docs.
+
+### Install
+
+Clone the repo and install everything with one command:
+
+```bash
+make install
+```
+
+This runs `uv sync --dev` (Python deps + dev tools into a managed virtualenv) and
+`pnpm install` (JS toolchain for the Vite bundle and VitePress docs).
+
+### Chore commands
+
+All common tasks are wrapped in the `Makefile`:
+
+| Command | What it does |
+| --- | --- |
+| `make install` | `uv sync --dev && pnpm install` — set up Python + JS deps |
+| `make test` | Run `flake8` on `djsuperadmin`, then `pytest` with coverage |
+| `make format` | Format the codebase with `black` |
+| `make lint` | Lint `djsuperadmin` with `flake8` |
+| `make build` | `pnpm run build` — rebuild `djsuperadmin/dist/djsuperadmin.bundle.js` with Vite |
+| `make migrations` | `uv run python manage.py makemigrations` |
+| `make docs-dev` | Serve the VitePress docs locally with hot reload |
+| `make docs-build` | Build the static docs site |
+| `make docs-preview` | Preview the built docs site |
+
+Tests live in `tests/` (pytest + pytest-django). The example/demo project lives in
+`example/`.
+
+### Running the demo app
+
+The example project doubles as the test project (settings module
+`example.djsuperadmin_example.settings`). To run it locally:
+
+```bash
+uv run python manage.py migrate
+uv run python manage.py createsuperuser
+uv run python manage.py runserver
+```
+
+Then log in at `/admin/` and open `/` — as a superuser you'll see the editable
+content regions inline on the page.
+
+### Rebuilding the JS bundle
+
+djsuperadmin ships a small JS bundle (built with [Vite](https://vitejs.dev/)) that is
+injected into the page by the `{% djsuperadminjs %}` tag; it lazy-loads SunEditor from
+a CDN for the WYSIWYG editor. If you change anything under the frontend sources, rebuild
+the bundle:
+
+```bash
+make build
+```
+
+This regenerates `djsuperadmin/dist/djsuperadmin.bundle.js`. Commit the rebuilt bundle
+alongside your source changes.
+
+## Coding conventions
+
+* **Formatting:** we use [black](https://black.readthedocs.io/). Run `make format`
+  before committing.
+* **Linting:** code must pass [flake8](https://flake8.pycqa.org/) — run `make lint`
+  (also part of `make test`).
+* Keep the project dependency-free: don't add runtime dependencies beyond Django.
+* Add or update tests for any behaviour change, and make sure `make test` is green.
+
+## Commit conventions
+
+We follow [Conventional Commits](https://www.conventionalcommits.org/). This is not
+just for tidiness — releases are automated with
+[python-semantic-release](https://python-semantic-release.readthedocs.io/), which
+derives the next version number and changelog directly from your commit messages.
+
+Use messages like:
+
+```
+feat: add in-place editing for raw contents
+fix: correct html replacement in nested elements
+docs: document the superadmin_raw_content tag
+chore: bump dev dependencies
+```
+
+Rough guide to what each type triggers:
+
+* `fix:` → patch release
+* `feat:` → minor release
+* a `BREAKING CHANGE:` footer (or `!` after the type) → major release
+* `docs:`, `chore:`, `test:`, `refactor:`, etc. → no release on their own
+
+## Pull request process
+
+1. Branch off `master` and keep your changes focused.
+2. Run `make format` and `make test` locally — both should pass.
+3. If you touched the frontend, run `make build` and commit the updated bundle.
+4. Write clear, [Conventional Commits](https://www.conventionalcommits.org/)-style
+   commit messages.
+5. Open a pull request against `lotrekagency/djsuperadmin`, describing the change and
+   linking any related issue.
+
+A maintainer will review your PR, and CI will run the test suite. Once it's approved
+and green, it will be merged.
+
+## Release flow
+
+Releases are cut by maintainers, not on every merge. When it's time, the manual
+**Release** GitHub Actions workflow (`workflow_dispatch`) runs
+python-semantic-release: it reads the Conventional Commits since the last tag,
+determines the new version, updates the changelog, builds the package with `uv`, and
+publishes it to [PyPI](https://pypi.org/project/djsuperadmin/). Writing good commit
+messages is what makes this work — thank you for keeping them clean!
+
+---
+
+---
+url: /djsuperadmin/Changelog.md
+---
+# Changelog
+
+## v0.11.3 (2022-09-30)
+
+### Fix
+
+* Fix html replacements in wrong elements ([`213cb26`](https://github.com/lotrekagency/djsuperadmin/commit/213cb26cea536b5ebd0234fe760d179682ae44cb))
+* Fix multiple patch in inplace editor ([`03af9a5`](https://github.com/lotrekagency/djsuperadmin/commit/03af9a5a3b14e6094ab73cca0aa9b3a633634a69))
+
+## v0.11.2 (2022-09-27)
+
+### Fix
+
+* Added min height and min width to djsuperadmin span ([`6c50bf9`](https://github.com/lotrekagency/djsuperadmin/commit/6c50bf98a7304e9df63cfb1e0bf5a3d24e71b72f))
+
+## v0.11.1 (2022-09-27)
+
+### Fix
+
+* Display edit status with border animation in inplace editing ([`f87a538`](https://github.com/lotrekagency/djsuperadmin/commit/f87a538f40cf5c0617f622549b1272f8cbd38fe2))
+* Fixed inplace editing style with contenteditable prop ([`d6ce4c3`](https://github.com/lotrekagency/djsuperadmin/commit/d6ce4c345a7e158aff158549d6cf6b5016d6868d))
+
+## v0.11.0 (2022-09-27)
+
+### Feature
+
+* Added inline editor ([`d123ee3`](https://github.com/lotrekagency/djsuperadmin/commit/d123ee3756691283c3b64beab4b52585c14d6db9))
+
+## v0.10.0 (2022-03-17)
+
+### Feature
+
+* Added raw content editor mode and little restyle 💅 ([`c1025ab`](https://github.com/lotrekagency/djsuperadmin/commit/c1025ab1dd05e0cf3022b476c6179845b78ec61a))
+
+### Fix
+
+* Fix typo in djsa data attributes ([`98c0a7d`](https://github.com/lotrekagency/djsuperadmin/commit/98c0a7d74d98e111ff1f01523b50dd6c0c3fcd24))
+* Fix script injection ([`d5e239a`](https://github.com/lotrekagency/djsuperadmin/commit/d5e239aa99e17ab36844a945042fb5bc567e17ee))
+
+## v0.9.1 (2021-10-26)
+
+---
+
+---
+url: /djsuperadmin/License.md
+---
+The MIT License (MIT)
+
+Copyright (c) Lotrek 2020
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
